@@ -36,6 +36,9 @@ ENV WP_DEBUG=${DEBUG:+1}
 ENV FORCE_HTTPS=0
 ENV PHP_INI_SCAN_DIR=$PHP_INI_DIR/conf.d
 
+# colorized bash
+COPY .bashrc .dircolors /root/
+
 # upgrade the base
 RUN set -ex && \
     apk update --verbose && \
