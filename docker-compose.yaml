@@ -1,0 +1,51 @@
+---
+name: heuma
+
+services:
+
+  heuma-wp:
+    # image: wpeverywhere/frankenwp:latest-php8.3
+    image: 4h/wordpress:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: heuma-wp
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    environment:
+      WORDPRESS_DB_HOST: heuma-db
+      WORDPRESS_DB_USER: heuma
+      WORDPRESS_DB_PASSWORD: heuma-heuma-heuma
+      WORDPRESS_DB_NAME: heuma
+      WORDPRESS_DEBUG: false
+      WORDPRESS_TABLE_PREFIX: wp_
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_SITEURL', 'https://heuma.cl');
+        define('WP_HOME', 'https://heuma.cl');
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy:/data/caddy
+      - ./caddy.log:/var/log/caddy.log
+    depends_on:
+      - heuma-db
+    tty: true
+
+  heuma-db:
+    image: mariadb:latest
+    container_name: heuma-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: heuma
+      MYSQL_USER: heuma
+      MYSQL_PASSWORD: heuma-heuma-heuma
+      MYSQL_ROOT_PASSWORD: WhereIsTheLove?
+    volumes:
+      - ./mysql:/var/lib/mysql
+
+networks:
+  default:
+    name: heuma-network
