@@ -3,6 +3,7 @@ name: heuma
 
 services:
 
+  # the WordPress container
   heuma-wp:
     # image: wpeverywhere/frankenwp:latest-php8.3
     image: 4h/wordpress:latest
@@ -12,9 +13,9 @@ services:
     container_name: heuma-wp
     restart: unless-stopped
     ports:
-      - 80:80
-      - 443:443
-      - 443:443/udp
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     environment:
       WORDPRESS_DB_HOST: heuma-db
       WORDPRESS_DB_USER: heuma
@@ -34,6 +35,7 @@ services:
       - heuma-db
     tty: true
 
+  # the
   heuma-db:
     image: mariadb:latest
     container_name: heuma-db
@@ -42,7 +44,7 @@ services:
       MYSQL_DATABASE: heuma
       MYSQL_USER: heuma
       MYSQL_PASSWORD: heuma-heuma-heuma
-      MYSQL_ROOT_PASSWORD: WhereIsTheLove?
+      MYSQL_ROOT_PASSWORD: this-database-is-not-secure
     volumes:
       - ./mysql:/var/lib/mysql
 
