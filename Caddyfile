@@ -5,11 +5,13 @@
         # This is required to avoid redirect loops when using a reverse proxy and cloud load balancers.
         # auto_https disable_redirects
 
-        email mika.cl@gmail.com
-        debug
+        # email mika.cl@gmail.com
+        # debug
 
         # testing certificates
-        # acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+        acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+
+        {$CADDY_GLOBAL_OPTIONS}
 
         frankenphp {
                 #worker /path/to/your/worker.php
@@ -22,20 +24,19 @@
 
         log {
                 format console
-                level debug
+                level debug # info
                 output file /var/log/caddy.log {
-                    roll_uncompressed
-                    roll_keep 30
-                    roll_keep_for 30d
+                        # roll_uncompressed
+                        roll_keep 10
+                        roll_keep_for 30d
                 }
         }
-
 }
 
 ## Need to set all hosts with port for the cloud.
 # You may not have the hostname being called due to dynamic IPs and load balancers.
 # Allowing all hosts on port 80 for health checks, local dev & cases where the hostname is unknown.
-heuma.cl {
+{$SERVER_NAME:localhost} {
 
         @static {
                 file
@@ -44,6 +45,8 @@ heuma.cl {
 
         root * /var/www/html/
         encode br zstd gzip
+
+        {$CADDY_SERVER_EXTRA_DIRECTIVES}
 
         php_server
 }

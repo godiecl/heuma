@@ -17,6 +17,7 @@ services:
       - "443:443"
       - "443:443/udp"
     environment:
+      SERVER_NAME: https://heuma.cl
       WORDPRESS_DB_HOST: heuma-db
       WORDPRESS_DB_USER: heuma
       WORDPRESS_DB_PASSWORD: heuma-heuma-heuma
@@ -25,6 +26,11 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_SITEURL', 'https://heuma.cl');
         define('WP_HOME', 'https://heuma.cl');
+      CADDY_GLOBAL_OPTIONS: |
+        email mika.cl@gmail.com
+        local_certs
+        debug
+        auto_https disable_redirects
     volumes:
       - ./wp-content:/var/www/html/wp-content
       - ./Caddyfile:/etc/caddy/Caddyfile:ro

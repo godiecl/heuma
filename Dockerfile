@@ -10,7 +10,7 @@ ARG FRANKENPHP_VERSION=1.3.0
 
 ARG USER=www-data
 
-# ---- FrankenPHP ----
+# ---- FrankenPHP buider ----
 # use the official frankenphp builder image
 FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-builder-php${PHP_VERSION}-alpine AS builder
 
@@ -28,19 +28,20 @@ RUN xcaddy build \
 
 # ---- Wordpress ----
 FROM wordpress:${WORDPRESS_VERSION} AS wp
+
+# ---- FrankenPHP ----
 FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-alpine AS base
 
-LABEL org.opencontainers.image.title=4hWP
+LABEL org.opencontainers.image.title="Wordpress with FrankenPHP"
 LABEL org.opencontainers.image.description="Optimized WordPress containers to run everywhere. Built with FrankenPHP & Caddy."
 LABEL org.opencontainers.image.url=https://4h.cl
 LABEL org.opencontainers.image.source=https://github.com/godiecl/
-LABEL org.opencontainers.image.licenses=MIT
 LABEL org.opencontainers.image.vendor="Diego Urrutia-Astorga"
 
 # replace the official binary by the one contained your custom modules
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
-ENV WP_DEBUG=0
-ENV FORCE_HTTPS=0
+# ENV WP_DEBUG=0
+# ENV FORCE_HTTPS=0
 ENV PHP_INI_SCAN_DIR=$PHP_INI_DIR/conf.d
 
 # colorized bash
@@ -55,6 +56,7 @@ RUN set -ex && \
         ca-certificates \
         coreutils \
         curl \
+        nss-tools \
         libcap \
         libeatmydata \
         tzdata \
@@ -70,15 +72,15 @@ RUN set -ex && \
     php -m && \
     php -v
 
-# install workdpress
+# set recommended PHP.ini settings
 RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
 COPY php.ini $PHP_INI_DIR/conf.d/wp.ini
 
+# copy workdpress
 COPY --from=wp /usr/src/wordpress /usr/src/wordpress
 COPY --from=wp /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d/
 COPY --from=wp /usr/local/bin/docker-entrypoint.sh /usr/local/bin/
 
-# set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN set -eux; \
     { \
@@ -130,6 +132,9 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     mv wp-cli.phar /usr/local/bin/wp
 
 COPY Caddyfile /etc/caddy/Caddyfile
+
+# format the Caddyfile
+RUN frankenphp fmt --overwrite /etc/caddy/Caddyfile
 
 # caddy requires an additional capability to bind to port 80 and 443
 RUN setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp
