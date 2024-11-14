@@ -56,9 +56,10 @@ RUN set -ex && \
         ca-certificates \
         coreutils \
         curl \
-        nss-tools \
         libcap \
         libeatmydata \
+        nss-tools \
+        sqlite \
         tzdata \
     && \
     cp /usr/share/zoneinfo/America/Santiago /etc/localtime && \
@@ -113,6 +114,14 @@ RUN { \
     echo 'html_errors = Off'; \
     } > $PHP_INI_DIR/conf.d/error-logging.ini
 
+# install the SQLite plugin
+RUN wget https://downloads.wordpress.org/plugin/sqlite-database-integration.zip -O /usr/src/wordpress/sqlite-database-integration.zip && \
+    unzip /usr/src/wordpress/sqlite-database-integration.zip -d /var/www/html/wp-content/mu-plugins/ && \
+    rm /usr/src/wordpress/sqlite-database-integration.zip
+
+RUN  cp /var/www/html/wp-content/mu-plugins/sqlite-database-integration/db.copy /var/www/html/wp-content/db.php && \
+    sed -i 's/{SQLITE_IMPLEMENTATION_FOLDER_PATH}/\/var\/www\/html\/wp-content\/mu-plugins\/sqlite-database-integration/g' /var/www/html/wp-content/db.php && \
+    sed -i 's/{SQLITE_PLUGIN}/WP_PLUGIN_DIR\/SQLITE_MAIN_FILE/g' /var/www/html/wp-content/db.php
 
 WORKDIR /var/www/html
 
