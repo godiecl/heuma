@@ -21,7 +21,6 @@ services:
       WORDPRESS_DB_USER: heuma
       WORDPRESS_DB_PASSWORD: heuma-heuma-heuma
       WORDPRESS_DB_NAME: heuma
-      WORDPRESS_DEBUG: false
       WORDPRESS_TABLE_PREFIX: wp_
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_SITEURL', 'https://heuma.cl');
@@ -30,7 +29,6 @@ services:
       - ./wp-content:/var/www/html/wp-content
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./caddy:/data/caddy
-      - ./caddy.log:/var/log/caddy.log
     depends_on:
       - heuma-db
     tty: true
