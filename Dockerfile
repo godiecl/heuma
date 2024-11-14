@@ -32,8 +32,8 @@ LABEL org.opencontainers.image.vendor="Diego Urrutia-Astorga"
 
 # replace the official binary by the one contained your custom modules
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
-ENV WP_DEBUG=${DEBUG:+1}
-ENV FORCE_HTTPS=0
+# ENV WP_DEBUG=${DEBUG:+1}
+# ENV FORCE_HTTPS=0
 ENV PHP_INI_SCAN_DIR=$PHP_INI_DIR/conf.d
 
 # colorized bash
