@@ -82,11 +82,20 @@ COPY --from=wp /usr/local/bin/docker-entrypoint.sh /usr/local/bin/
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN set -eux; \
     { \
-    echo 'opcache.memory_consumption=128'; \
-    echo 'opcache.interned_strings_buffer=8'; \
-    echo 'opcache.max_accelerated_files=4000'; \
-    echo 'opcache.revalidate_freq=2'; \
-    } > $PHP_INI_DIR/conf.d/opcache-recommended.ini
+    echo 'opcache.enable=1'; \
+    echo 'opcache.enable_cli=1'; \
+    echo 'opcache.enable_file_override=1'; \
+    echo 'opcache.fast_shutdown=1'; \
+    echo 'opcache.interned_strings_buffer=32'; \
+    echo 'opcache.jit_buffer_size=256M'; \
+    echo 'opcache.max_accelerated_files=50000'; \
+    echo 'opcache.memory_consumption=256'; \
+    echo 'opcache.optimization_level=0x7FFFBFFF'; \
+    echo 'opcache.revalidate_freq=5'; \
+    echo 'opcache.save_comments=1'; \
+    echo 'opcache.validate_timestamps=0'; \
+    } > $PHP_INI_DIR/conf.d/opcache-recommended.ini \
+
 # https://wordpress.org/support/article/editing-wp-config-php/#configure-error-logging
 RUN { \
     # https://www.php.net/manual/en/errorfunc.constants.php
@@ -113,7 +122,7 @@ RUN sed -i \
     /usr/local/bin/docker-entrypoint.sh
 
 # add $_SERVER['ssl'] = true; when env USE_SSL = true is set to the wp-config.php file here: /usr/local/bin/wp-config-docker.php
-RUN sed -i 's/<?php/<?php if (!!getenv("FORCE_HTTPS")) { \$_SERVER["HTTPS"] = "on"; } define( "FS_METHOD", "direct" ); set_time_limit(300); /g' /usr/src/wordpress/wp-config-docker.php
+# RUN sed -i 's/<?php/<?php if (!!getenv("FORCE_HTTPS")) { \$_SERVER["HTTPS"] = "on"; } define( "FS_METHOD", "direct" ); set_time_limit(300); /g' /usr/src/wordpress/wp-config-docker.php
 
 # adding WordPress CLI
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
