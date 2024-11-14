@@ -1,5 +1,6 @@
 # time (docker buildx build --progress=plain --tag 4h/wordpress:latest --file Dockerfile .)
-ARG WORDPRESS_VERSION=latest
+# https://hub.docker.com/_/wordpress/tags?name=6.6.2
+ARG WORDPRESS_VERSION=6.6.2-php8.3-fpm-alpine
 
 # https://www.php.net/supported-versions.php
 ARG PHP_VERSION=8.3.13
@@ -26,7 +27,7 @@ RUN xcaddy build \
     --with github.com/dunglas/caddy-cbrotli
 
 # ---- Wordpress ----
-FROM wordpress:$WORDPRESS_VERSION AS wp
+FROM wordpress:${WORDPRESS_VERSION} AS wp
 FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-alpine AS base
 
 LABEL org.opencontainers.image.title=4hWP
@@ -38,8 +39,8 @@ LABEL org.opencontainers.image.vendor="Diego Urrutia-Astorga"
 
 # replace the official binary by the one contained your custom modules
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
-# ENV WP_DEBUG=${DEBUG:+1}
-# ENV FORCE_HTTPS=0
+ENV WP_DEBUG=0
+ENV FORCE_HTTPS=0
 ENV PHP_INI_SCAN_DIR=$PHP_INI_DIR/conf.d
 
 # colorized bash
