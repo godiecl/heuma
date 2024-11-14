@@ -1,7 +1,12 @@
 # time (docker buildx build --progress=plain --tag 4h/wordpress:latest --file Dockerfile .)
 ARG WORDPRESS_VERSION=latest
+
+# https://www.php.net/supported-versions.php
 ARG PHP_VERSION=8.3.13
+
+# https://github.com/dunglas/frankenphp/releases
 ARG FRANKENPHP_VERSION=1.3.0
+
 ARG USER=www-data
 
 # ---- FrankenPHP ----
