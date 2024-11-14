@@ -96,7 +96,7 @@ RUN set -eux; \
     echo 'opcache.revalidate_freq=5'; \
     echo 'opcache.save_comments=1'; \
     echo 'opcache.validate_timestamps=0'; \
-    } > $PHP_INI_DIR/conf.d/opcache-recommended.ini \
+    } > $PHP_INI_DIR/conf.d/opcache-recommended.ini
 
 # https://wordpress.org/support/article/editing-wp-config-php/#configure-error-logging
 RUN { \
